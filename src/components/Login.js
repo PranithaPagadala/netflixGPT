@@ -1,56 +1,69 @@
-import React from 'react'
-import Header from './Header'
-import { useState, useRef } from 'react';
-import { checkValidData } from '../utilities/Validate';
-const Login = () => {
-    const [isSignInForm, setIsSignInForm] = useState(true);
+import React, { useRef } from "react";
+import Header from "./Header";
+import { useState } from "react";
+import { checkValidData } from "../utilities/Validate";
+import { auth } from "../utilities/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-    const [errorMessage, setErrorMessage] = useState(null);
-    // const fullName = useRef(null);
-    const email = useRef(null);
-    const password = useRef(null);
-    const toggleSignInForm = () => {
-      setIsSignInForm(!isSignInForm);
-    };
-    const handleButtonClick = () => {
-      // const fullNameValue = fullName.current ? fullName.current.value : "Placeholder Name";
-      const message = checkValidData(email.current.value, password.current.value);
-      console.log(message);
-      setErrorMessage(message);
-//       if(message) return;
-//       if(!isSignInForm){
-//         createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
-//     .then((userCredential) => {
-//       // Signed up 
-//       const user = userCredential.user;
-//       console.log(user);
-//     })
-//     .catch((error) => {
-//       const errorCode = error.code;
-//       const errorMessage = error.message;
-//       setErrorMessage(errorCode + "-" + errorMessage)
-      
-//     });
-//       } else{
-//         //Sign In Logic
-//   signInWithEmailAndPassword(auth, email.current.value, password.current.value)
-//     .then((userCredential) => {
-//       // Signed in 
-//       const user = userCredential.user;
-//       console.log(user);
-//     })
-//     .catch((error) => {
-//       const errorCode = error.code;
-//       const errorMessage = error.message;
-//       setErrorMessage(errorCode + "-" + errorMessage);
-//     });
-//       }
-    };
-  
+const Login = () => {
+  const [isSignInForm, setIsSignInForm] = useState(true);
+
+  const [errorMessage, setErrorMessage] = useState(null);
+  // const fullName = useRef(null);
+  const email = useRef(null);
+  const password = useRef(null);
+  const toggleSignInForm = () => {
+    setIsSignInForm(!isSignInForm);
+  };
+  const handleButtonClick = () => {
+    // const fullNameValue = fullName.current ? fullName.current.value : "Placeholder Name";
+    const message = checkValidData(email.current.value, password.current.value);
+    console.log(message);
+    setErrorMessage(message);
+    if (message) return;
+    if (!isSignInForm) {
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      //Sign In Logic
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log("Login" +user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    }
+  };
+
   return (
     <div>
-        <Header/>
-        <div className="absolute">
+      <Header />
+      <div className="absolute">
         <img
           alt="img"
           src="https://assets.nflxext.com/ffe/siteui/vlv3/ce449112-3294-449a-b8d3-c4e1fdd7cff5/web/IN-en-20241202-TRIFECTA-perspective_0acfb303-6291-4ad1-806f-dda785f6295a_large.jpg"
@@ -94,7 +107,7 @@ const Login = () => {
         </p>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
