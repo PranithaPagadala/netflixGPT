@@ -6,15 +6,21 @@ import { auth } from "../utilities/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utilities/userSlice";
+import { BG_IMG, USER_AVATAR } from "../utilities/constants";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
 
   const [errorMessage, setErrorMessage] = useState(null);
-  // const fullName = useRef(null);
+
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
+  const dispatch = useDispatch();
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
@@ -33,7 +39,24 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          console.log(user);
+          updateProfile(user, {
+            displayName: "name.current.value",
+            photoURL: USER_AVATAR,
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -50,7 +73,7 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log("Login" +user);
+          console.log("Login" + user);
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -66,7 +89,7 @@ const Login = () => {
       <div className="absolute">
         <img
           alt="img"
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/ce449112-3294-449a-b8d3-c4e1fdd7cff5/web/IN-en-20241202-TRIFECTA-perspective_0acfb303-6291-4ad1-806f-dda785f6295a_large.jpg"
+          src={BG_IMG}
         />
       </div>
       <form
@@ -78,7 +101,7 @@ const Login = () => {
             type="text"
             placeholder="Full-Name"
             className="p-4 my-4 w-full bg-gray-700"
-            // ref={fullName}
+            ref={name}
           />
         )}
         <input
